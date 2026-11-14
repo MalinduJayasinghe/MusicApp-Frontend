@@ -45,7 +45,6 @@ export const Search: React.FC = () => {
     if (debounced !== urlQuery) setParams(debounced ? { q: debounced } : {}, { replace: true })
   }, [debounced, urlQuery, setParams])
 
-  // URL -> request
   useEffect(() => {
     if (!urlQuery) return
     let cancelled = false
