@@ -27,7 +27,6 @@ const LibraryProvider = ({ children }: { children: ReactNode }) => {
     [likedSongs]
   )
 
-  // Optimistic update: change the UI first, undo if the request fails.
   const toggleLike = useCallback(
     async (track: Track) => {
       const alreadyLiked = likedSongs.some((t) => t.videoId === track.videoId)
