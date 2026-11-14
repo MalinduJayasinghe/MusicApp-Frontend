@@ -23,6 +23,7 @@ export const PlayerBar: React.FC = () => {
 
   return (
     <>
+      {/* ---------- desktop bar ---------- */}
       <footer className="hidden h-[88px] shrink-0 grid-cols-[minmax(0,1fr)_minmax(0,640px)_minmax(0,1fr)] items-center gap-4 px-4 lg:grid">
         <div className="flex min-w-0 items-center gap-3">
           {current && (
@@ -69,6 +70,7 @@ export const PlayerBar: React.FC = () => {
         </div>
       </footer>
 
+      {/* ---------- mobile mini player ---------- */}
       {current && (
         <div className="mx-2 mb-1 shrink-0 overflow-hidden rounded-lg bg-neutral-800 lg:hidden">
           <div className="flex items-center gap-3 p-2">
