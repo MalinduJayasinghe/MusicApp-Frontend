@@ -14,11 +14,6 @@ const readStoredVolume = (): number => {
 }
 const INITIAL_VOLUME = readStoredVolume()
 
-/*
- * The YouTube player calls our callbacks outside of React, so they would see
- * stale state. To avoid that, the "live" player state (queue, index, repeat...)
- * is kept in a ref (`store`) and mirrored into React state for rendering.
- */
 interface PlayerStore {
   queue: Track[]
   index: number
@@ -61,8 +56,6 @@ const PlayerProvider = ({ children }: { children: ReactNode }) => {
   const [expanded, setExpanded] = useState(false)
 
   const current = index >= 0 ? (queue[index] ?? null) : null
-
-  /* ---------------- core controls ---------------- */
 
   const loadTrack = useCallback((i: number) => {
     const s = store.current
@@ -133,7 +126,6 @@ const PlayerProvider = ({ children }: { children: ReactNode }) => {
     const player = playerRef.current
     if (!s.queue.length) return
 
-    // like Spotify: restart the song first, go back only if it just started
     if ((player?.getCurrentTime() ?? 0) > 3 || s.index <= 0) {
       player?.seekTo(0, true)
       setProgress(0)
@@ -220,7 +212,6 @@ const PlayerProvider = ({ children }: { children: ReactNode }) => {
     [playQueue]
   )
 
-  /* ---------------- YouTube player events ---------------- */
 
   const handleEnded = useCallback(() => {
     if (store.current.repeat === "one") {
@@ -305,7 +296,6 @@ const PlayerProvider = ({ children }: { children: ReactNode }) => {
                 const realDuration = e.target.getDuration()
                 if (realDuration > 0) setDuration(realDuration)
 
-                // remember this song in "Recently played" (once per song)
                 const track = s.queue[s.index]
                 if (track && s.lastLoggedId !== track.videoId) {
                   s.lastLoggedId = track.videoId
@@ -335,7 +325,6 @@ const PlayerProvider = ({ children }: { children: ReactNode }) => {
       try {
         player?.destroy()
       } catch {
-        /* player was never created */
       }
       host.replaceChildren()
     }
@@ -352,7 +341,6 @@ const PlayerProvider = ({ children }: { children: ReactNode }) => {
     return () => window.clearInterval(timer)
   }, [isPlaying])
 
-  /* ---------------- keyboard + media keys ---------------- */
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
