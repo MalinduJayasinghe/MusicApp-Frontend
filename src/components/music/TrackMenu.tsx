@@ -10,7 +10,8 @@ import type { Track } from "../../types/music"
 
 interface TrackMenuProps {
   track: Track
-  onRemove?: () => void // shown as "Remove from this playlist"
+  onRemove?: () => void
+  hideQueueActions?: boolean
 }
 
 const MENU_WIDTH = 224
@@ -18,7 +19,8 @@ const MENU_HEIGHT = 270
 
 const itemClass = "block w-full rounded px-3 py-2 text-left text-sm text-neutral-200 hover:bg-white/10"
 
-export const TrackMenu: React.FC<TrackMenuProps> = ({ track, onRemove }) => {
+
+export const TrackMenu: React.FC<TrackMenuProps> = ({ track, onRemove, hideQueueActions }) => {
   const { addToQueue, playNext } = usePlayer()
   const { playlists, addToPlaylist, createPlaylist, isLiked, toggleLike } = useLibrary()
   const { showToast } = useToast()
@@ -79,71 +81,75 @@ export const TrackMenu: React.FC<TrackMenuProps> = ({ track, onRemove }) => {
   const liked = isLiked(track.videoId)
 
   return (
-    <>
-      <button
-        ref={buttonRef}
-        aria-label="More options"
-        aria-haspopup="menu"
-        onClick={open}
-        className="grid size-8 place-items-center rounded-full text-xl text-neutral-400 hover:text-white"
-      >
-        <MoreIcon />
-      </button>
+      <>
+        <button
+            ref={buttonRef}
+            aria-label="More options"
+            aria-haspopup="menu"
+            onClick={open}
+            className="grid size-8 place-items-center rounded-full text-xl text-neutral-400 hover:text-white"
+        >
+          <MoreIcon />
+        </button>
 
-      {pos &&
-        createPortal(
-          <div
-            role="menu"
-            style={{ top: pos.top, left: pos.left, width: MENU_WIDTH }}
-            className="fixed z-[90] max-h-72 overflow-y-auto rounded-lg bg-neutral-800 p-1 shadow-2xl ring-1 ring-white/10"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {view === "main" ? (
-              <>
-                <button className={itemClass} onClick={() => { playNext(track); showToast("Will play next"); close() }}>
-                  Play next
-                </button>
-                <button className={itemClass} onClick={() => { addToQueue(track); showToast("Added to queue"); close() }}>
-                  Add to queue
-                </button>
-                <button className={itemClass} onClick={() => { toggleLike(track); close() }}>
-                  {liked ? "Remove from Liked Songs" : "Save to Liked Songs"}
-                </button>
-                <button className={itemClass} onClick={() => setView("playlists")}>
-                  Add to playlist ›
-                </button>
-                {onRemove && (
-                  <button className={`${itemClass} !text-rose-400`} onClick={() => { onRemove(); close() }}>
-                    Remove from this playlist
-                  </button>
-                )}
-              </>
-            ) : (
-              <>
-                <button className={`${itemClass} text-neutral-400`} onClick={() => setView("main")}>
-                  ‹ Back
-                </button>
-                <button className={`${itemClass} font-semibold`} onClick={() => { close(); setCreating(true) }}>
-                  + New playlist
-                </button>
-                {playlists.map((p) => (
-                  <button key={p._id} className={`${itemClass} truncate`} onClick={() => handleAddToPlaylist(p._id, p.name)}>
-                    {p.name}
-                  </button>
-                ))}
-              </>
+        {pos &&
+            createPortal(
+                <div
+                    role="menu"
+                    style={{ top: pos.top, left: pos.left, width: MENU_WIDTH }}
+                    className="fixed z-[90] max-h-72 overflow-y-auto rounded-lg bg-neutral-800 p-1 shadow-2xl ring-1 ring-white/10"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                  {view === "main" ? (
+                      <>
+                        {!hideQueueActions && (
+                            <>
+                              <button className={itemClass} onClick={() => { playNext(track); showToast("Will play next"); close() }}>
+                                Play next
+                              </button>
+                              <button className={itemClass} onClick={() => { addToQueue(track); showToast("Added to queue"); close() }}>
+                                Add to queue
+                              </button>
+                            </>
+                        )}
+                        <button className={itemClass} onClick={() => { toggleLike(track); close() }}>
+                          {liked ? "Remove from Liked Songs" : "Save to Liked Songs"}
+                        </button>
+                        <button className={itemClass} onClick={() => setView("playlists")}>
+                          Add to playlist ›
+                        </button>
+                        {onRemove && (
+                            <button className={`${itemClass} !text-rose-400`} onClick={() => { onRemove(); close() }}>
+                              Remove from this playlist
+                            </button>
+                        )}
+                      </>
+                  ) : (
+                      <>
+                        <button className={`${itemClass} text-neutral-400`} onClick={() => setView("main")}>
+                          ‹ Back
+                        </button>
+                        <button className={`${itemClass} font-semibold`} onClick={() => { close(); setCreating(true) }}>
+                          + New playlist
+                        </button>
+                        {playlists.map((p) => (
+                            <button key={p._id} className={`${itemClass} truncate`} onClick={() => handleAddToPlaylist(p._id, p.name)}>
+                              {p.name}
+                            </button>
+                        ))}
+                      </>
+                  )}
+                </div>,
+                document.body
             )}
-          </div>,
-          document.body
-        )}
 
-      <PlaylistFormModal
-        open={creating}
-        title="Create playlist"
-        submitLabel="Create"
-        onClose={() => setCreating(false)}
-        onSubmit={handleCreate}
-      />
-    </>
+        <PlaylistFormModal
+            open={creating}
+            title="Create playlist"
+            submitLabel="Create"
+            onClose={() => setCreating(false)}
+            onSubmit={handleCreate}
+        />
+      </>
   )
 }

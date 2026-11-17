@@ -8,28 +8,34 @@ import { MobileNav } from "./MobileNav"
 import { PlayerBar } from "../music/PlayerBar"
 import { NowPlayingPanel } from "../music/NowPlayingPanel"
 
+/*
+ * Spotify-style shell:
+ *   [ sidebar | page content | now playing ]
+ *   [            player bar               ]
+ * The providers live here so the music keeps playing while you change pages.
+ */
 export const MainLayout: React.FC = () => {
   return (
-    <LibraryProvider>
-      <PlayerProvider>
-        <div className="flex h-dvh flex-col bg-black text-white">
-          <div className="flex min-h-0 flex-1 gap-2 p-0 lg:p-2">
-            <Sidebar />
+      <LibraryProvider>
+        <PlayerProvider>
+          <div className="flex h-dvh flex-col bg-black text-white">
+            <div className="flex min-h-0 flex-1 gap-2 overflow-hidden p-0 lg:p-2">
+              <Sidebar />
 
-            <main className="min-w-0 flex-1 overflow-y-auto bg-linear-to-b from-neutral-800/50 to-neutral-900 to-40% lg:rounded-lg">
-              <Header />
-              <div className="px-4 pb-8 pt-2 sm:px-6">
-                <Outlet />
-              </div>
-            </main>
+              <main className="min-w-0 flex-1 overflow-y-auto bg-linear-to-b from-neutral-800/50 to-neutral-900 to-40% lg:rounded-lg">
+                <Header />
+                <div className="px-4 pb-8 pt-2 sm:px-6">
+                  <Outlet />
+                </div>
+              </main>
 
-            <NowPlayingPanel />
+              <NowPlayingPanel />
+            </div>
+
+            <PlayerBar />
+            <MobileNav />
           </div>
-
-          <PlayerBar />
-          <MobileNav />
-        </div>
-      </PlayerProvider>
-    </LibraryProvider>
+        </PlayerProvider>
+      </LibraryProvider>
   )
 }
