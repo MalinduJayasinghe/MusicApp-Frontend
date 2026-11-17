@@ -8,12 +8,6 @@ import { MobileNav } from "./MobileNav"
 import { PlayerBar } from "../music/PlayerBar"
 import { NowPlayingPanel } from "../music/NowPlayingPanel"
 
-/*
- * Spotify-style shell:
- *   [ sidebar | page content | now playing ]
- *   [            player bar               ]
- * The providers live here so the music keeps playing while you change pages.
- */
 export const MainLayout: React.FC = () => {
   return (
       <LibraryProvider>
